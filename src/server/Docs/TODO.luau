@@ -1,0 +1,41 @@
+--!strict
+
+-- Notes and implementations left up to the consumer.
+
+-- ============================================================================================
+-- IMPLEMENTATION REQUIREMENTS
+-- ============================================================================================
+--
+-- VFX + SOUND
+-- Utilize `PresentationClient.UseDefaultPresentation`. Name templates according to `effectId`s.
+--
+-- ANIMATIONS
+-- Connect `AnimationController` and `AnimationPreloader` to `OnEffectRequested` 
+-- using your own asset IDs.
+--
+-- NPC SPAWNING
+-- `DummyCombatants.luau` provides placeholder targets. Real NPCs require custom spawning logic
+-- that calls `CombatantRegistry.Create` and `CombatantSkills.Equip`.
+--
+-- CLASSES
+-- Implement classes by combining `CombatantDefinition` with a `MovesetId`.
+-- `Config.DefaultMovesetId` can be used for a global default.
+--
+-- HEALTH BAR UI
+-- Toggle `Config.MirrorHealthToHumanoid` to sync health to the default Humanoid health bar.
+-- Custom HUDs must be built independently.
+--
+-- DEATH / RESPAWN
+-- Override `Config.OnCombatantDied` with custom logic.
+--
+-- TEAMS
+-- Call `Combatant:SetTeam` to utilize the existing friendly-fire checks in `CombatDamageBridge`.
+--
+-- PROJECTILE VISUALS
+-- Projectiles currently use `DebugDraw` rays. Replace with actual visuals before shipping.
+--
+-- CONFIGURATION
+-- Keep server-side validation configurations in `server/.../ServerConfig.luau`. 
+-- Do not place sensitive tuning parameters in shared configs.
+
+return nil

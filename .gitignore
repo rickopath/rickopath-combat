@@ -1,0 +1,13 @@
+# Project place file
+/project2.rbxlx
+
+# Test project place file (built from test.project.json, never the same as the real game place)
+/test.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+sourcemap.json
+Packages/
+DevPackages/

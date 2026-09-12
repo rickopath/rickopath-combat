@@ -1,0 +1,18 @@
+[package]
+name = "rickopath/combat"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+Signal = "lucasmzreal/fastsignal@10.3.2"
+observers = "sleitnick/observers@0.5.0"
+bytenet = "ffrostflame/bytenet@0.4.6"
+spring = "sleitnick/spring@1.0.0"
+promise = "evaera/promise@4.0.0"
+trove = "sleitnick/trove@1.8.0"
+
+# test-only, never shipped to a consumer of this framework - see test.project.json, which is a
+# SEPARATE Rojo project from default.project.json specifically so this never ends up in your game
+[dev-dependencies]
+TestEZ = "roblox/testez@0.4.1"
