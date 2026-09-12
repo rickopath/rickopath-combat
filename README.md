@@ -45,7 +45,13 @@ Client prediction usually opens the door for exploiters, but this framework enfo
 2. **`Combatant.Health` vs `Humanoid.Health`:** The framework manages an authoritative health pool and syncs to `Humanoid.Health`.
 3. **Synced Moveset IDs:** `DefaultMovesetId` on the client must match the server.
 
-## API Reference
+## Documentation & Setup
+Full setup instructions, configuration details, and the complete API reference are located in the `src/server/Docs/` directory:
+- **`GettingStarted.luau`**: Step-by-step tutorial for rigging your first combatant and skill.
+- **`APIReference.luau`**: Exhaustive list of all methods, signals, and hooks.
+- **`ImportantMisc.luau`**: Advanced mechanics like lag simulation, blocking, and the Server/Shared configuration split.
+
+## API Quick Reference
 
 ### Registries & Setup
 | Function | Description |
