@@ -6,16 +6,20 @@
 	--------------------------------------------------------------------------------
 	1. Spawn rig.
 	2. Parent to `workspace.Alive`.
-	3. Register on server:
 
-	local CombatantRegistry = require(game.ServerScriptService.Server.Combat.CombatantRegistry)
+	That's it. `DummyCombatants.luau` automatically tracks any model placed in 
+	that folder on server startup and wires up the `Combatant` wrapper for you.
+
+	`Humanoid.Health` is ignored by the damage system. Turn on `MirrorHealthToHumanoid = true` 
+	in `Config.luau` (ServerConfig Combat) if you need the default health bar to reflect actual internal health.
 	
-	dummy.Parent = workspace.Alive
-	local combatant = CombatantRegistry.Create(dummy, { MaxHealth = 100 })
+	NOTE: 
+	The framework configuration is split across two files for security:
+	1. `src/shared/Combat/Config.luau` (Shared config, safe to replicate to clients)
+	2. `src/server/Combat/ServerConfig.luau` (Server overrides, authoritative tuning)
 
-	`Humanoid.Health` is ignored. Turn on `MirrorHealthToHumanoid = true` in `Config.luau` 
-	if you need the default health bar to update.
-
+	You should tweak values like lag tolerance, tick intervals, and default movesets 
+	in these files to fit your game. See `ImportantMisc.luau` for full details later.
 	--------------------------------------------------------------------------------
 	STEP 2: SKILL CREATION
 	--------------------------------------------------------------------------------

@@ -2,6 +2,11 @@
 
 -- API Reference.
 -- See GettingStarted.luau and ImportantMisc.luau.
+--
+-- NOTE: The framework configuration is intentionally split into two files:
+-- 1. `src/shared/Combat/Config.luau` (Safe fallback/shared data)
+-- 2. `src/server/Combat/ServerConfig.luau` (Server overrides for sensitive tuning)
+-- You are expected to modify these files to fit your game's needs (tick rates, lag tolerance, etc).
 
 --------------------------------------------------------------------------------
 -- COMBATANT

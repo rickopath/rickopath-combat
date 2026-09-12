@@ -114,6 +114,22 @@
 --   F10 - Toggles DebugDraw shape visualization.
 
 -- ============================================================================================
+-- CONFIG SPLIT (SHARED VS SERVER)
+-- ============================================================================================
+--
+-- The configuration is split into two halves intentionally to prevent exploiters from 
+-- dumping sensitive tuning variables from ReplicatedStorage:
+--
+-- 1. `src/shared/Combat/Config.luau` (Shared config)
+--    Contains the baseline types and fallback/safe values. This replicates to the client.
+--    Set things like `DefaultMovesetId` here so the client knows what to equip.
+--
+-- 2. `src/server/Combat/ServerConfig.luau` (Server config)
+--    Overrides the shared config at runtime ONLY on the server.
+--    Put authoritative parameters like `CombatantTickInterval`, `MovementProbeRadius`, 
+--    and lag tolerance variables here. The client never sees them, so they can't be scraped.
+
+-- ============================================================================================
 -- VFX PRESENTATION SETTINGS
 -- ============================================================================================
 --
