@@ -34,7 +34,7 @@ sequenceDiagram
 
 > **`workspace.Alive`**: Characters and NPCs must be parented here to be tracked.
 
-> **Health**: The framework manages health internally and syncs to `Humanoid.Health`. Don't write to the humanoid directly.
+> **Health**: `Humanoid.Health` is ignored by default. Set `MirrorHealthToHumanoid = true` in `ServerConfig.luau` if you need the health bar to reflect actual health.
 
 > **Movesets**: `DefaultMovesetId` must match on both client and server.
 
