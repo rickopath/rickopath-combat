@@ -49,6 +49,7 @@ return function()
 
 			pool:Add(-5) -- 5 -> 0, real transition
 			pool:Add(-50) -- already 0, clamps to 0, no new transition
+			task.wait() -- Allow deferred signals to fire if FastSignal is set to Deferred
 			expect(depletedCount).to.equal(1)
 
 			connection:Disconnect()
