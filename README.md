@@ -1,14 +1,10 @@
-# Roblox Combat Framework
+# rickopath-combat
 
-This is a strictly server-authoritative, client-predicted combat framework for Roblox. 
+A strictly server-authoritative, client-predicted combat framework for Roblox.
 
 ## Core Architecture
 
-Client-predicted melee combat requires two components:
-1. Instant visual feedback for the client.
-2. Strict server-side validation to prevent exploitation.
-
-This framework solves both using **Rollback Lag Compensation**. 
+This framework uses rollback lag compensation to handle client prediction. It provides instant visual feedback on the client while maintaining authoritative hit validation on the server.
 
 ```mermaid
 sequenceDiagram
@@ -25,54 +21,72 @@ sequenceDiagram
     Server->>Server: 2. Validate hit in the past
     
     Server->>Client: Hit Confirmed! (Apply Damage)
+
 ```
 
-## Anti-Cheat
-Client prediction usually opens the door for exploiters, but this framework enforces strict server-side bounds:
-- **Max Rewind Depth (1.5s):** The server only keeps a 1.5-second history buffer. If a lag-switcher freezes their internet and tries to send a packet 5 seconds later, the server drops it.
-- **Latency Tolerance (6 studs):** The server checks where the attacker *claims* to have swung from against where the server thinks they actually are. If they teleported across the map to land a hit, it's rejected.
-- **Sequence Validation:** Every swing has an incrementing ID. Replay attacks (duplicating a hit packet to deal double damage) are automatically dropped.
-- **Future Rejection:** Any packet claiming to originate from a timestamp in the future is immediately dropped. 
+## Anti-Cheat Validation
 
-## Technical Details (Under The Hood)
-- **15-Axis SAT OBB Math:** Roblox doesn't let you cast rays into the past. The server pulls historical CFrames from a 60hz Rewind Buffer and uses a pure-Lua 15-axis Separating Axis Theorem (SAT) to mathematically calculate Oriented-Bounding-Box overlap without ever touching the live physics engine.
-- **Tunnel-Proof Melee Sub-Stepping:** Fast melee swings travel in an arc. The engine mathematically slices swing arcs into microscopic sub-steps based on angular distance, guaranteeing that fast swings never teleport through thin targets.
-- **Zero-Allocation Resource Pooling:** Calculates thousands of hits per second with a completely flat memory footprint. Hit results and debug adornments use a strict `Pool.luau` to check out and return tables, preventing Garbage Collection (GC) lag spikes.
-- **Deterministic Projectiles:** Bypasses Roblox's unreliable `.Touched` events entirely. Projectiles are manually ticked by the server using shape-casting so they never glitch through walls.
+To secure client prediction, the server enforces these bounds:
+
+* **Max Rewind Depth (1.5s):** The server maintains a 1.5-second history buffer. Packets older than this are dropped to mitigate lag-switching.
+* **Latency Tolerance (6 studs):** The server verifies the attacker's claimed hit position against their actual server-tracked position.
+* **Sequence Validation:** Every swing uses an incrementing ID. Replayed or duplicated hit packets are ignored.
+* **Future Rejection:** Packets claiming to originate from a future timestamp are dropped.
+
+## Technical Details
+
+* **Hit Detection:** Uses a pure-Luau 15-axis Separating Axis Theorem (SAT) to calculate Oriented-Bounding-Box overlap against historical CFrames pulled from a 60hz server rewind buffer.
+* **Arc Sub-stepping:** Melee swing arcs are sliced into smaller steps based on angular distance to prevent hits from skipping past targets.
+* **Memory Management:** Hit results and debug adornments utilize `Pool.luau` to prevent garbage collection spikes.
+* **Projectiles:** Projectiles are ticked strictly on the server using shape-casting to prevent clipping through geometry.
 
 ## Architecture Quirks
-1. **`workspace.Alive` is absolute:** Characters must be parented to `workspace.Alive` **before** calling `CombatantRegistry.Create()`.
-2. **`Combatant.Health` vs `Humanoid.Health`:** The framework manages an authoritative health pool and syncs to `Humanoid.Health`.
-3. **Synced Moveset IDs:** `DefaultMovesetId` on the client must match the server.
+
+1. **`workspace.Alive` Rule:** Characters must be parented to `workspace.Alive` 
+2. **Health Authority:** The framework manages an internal, authoritative health pool that forces syncs to `Humanoid.Health`.
+3. **Moveset Parity:** The `DefaultMovesetId` on the client must exactly match the server.
+
+## Installation (Rojo & Wally)
+
+This framework relies on Wally for package management and Rojo for Studio syncing.
+
+1. Ensure your toolchain manager is installed (either [Aftman](https://github.com/LPGhatguy/aftman) or [Rokit](https://github.com/rojo-rbx/rokit)).
+2. Open your terminal in the project root and run `aftman install` (or `rokit install`) to provision Wally and Rojo.
+3. Run `wally install` to fetch dependencies and generate the `Packages` directory.
+4. Build or sync the project:
+* **To sync live:** Run `rojo serve` and connect via the Roblox Studio plugin.
+* **To build a model:** Run `rojo build default.project.json -o rickopath-combat.rbxm` and drop the file into your game.
+* **To run the test suite:** Run `rojo build test.project.json -o test.rbxlx` and open the file in Studio.
 
 ## Documentation & Setup
-Full setup instructions, configuration details, and the complete API reference are located in the `src/server/Docs/` directory:
-- **`GettingStarted.luau`**: Step-by-step tutorial for rigging your first combatant and skill.
-- **`APIReference.luau`**: Exhaustive list of all methods, signals, and hooks.
-- **`ImportantMisc.luau`**: Advanced mechanics like lag simulation, blocking, and the Server/Shared configuration split.
+
+Complete setup instructions and the API reference are located in `src/server/Docs/`:
+
+* **`GettingStarted.luau`**: Setup guide for rigging combatants and skills.
+* **`APIReference.luau`**: Method, signal, and hook documentation.
+* **`ImportantMisc.luau`**: Mechanics covering lag simulation, blocking, and configuration.
 
 ## API Quick Reference
 
 ### Registries & Setup
+
 | Function | Description |
-| :--- | :--- |
+| --- | --- |
 | `CombatantRegistry.Create(model, def, player)` | Wraps a Model in a `Combatant` wrapper, granting Health, Mana, and Stamina. |
 | `CombatantRegistry.Get(model)` | Returns the active `Combatant` object for a given model. |
 | `CombatantRegistry.Destroy(model)` | Cleans up the Combatant and removes it from the rewind buffer. |
 | `CombatantSkills.Equip(model, skillId)` | Equips a registered skill to the Combatant. |
 
 ### Combatant Methods & Events
+
 | Event / Method | Description |
-| :--- | :--- |
+| --- | --- |
 | `Combatant.OnDamaged(amount, type, source)` | Fired when damaged. |
 | `Combatant.OnHealed(amount, source)` | Fired when health is restored. |
 | `Combatant.OnDied(source)` | Fired when Health hits 0. |
 | `Combatant:ApplyDamage(amount, type, source)` | Forces damage onto the combatant (Server only). |
 | `Combatant:Heal(amount)` | Restores health up to the configured MaxHealth. |
-| `Combatant:GetResource(id)` | Returns current value of a resource (e.g. "Stamina", "Mana"). |
-| `Combatant:SpendResource(id, amount)` | Consumes a resource. Rejects if insufficient. |
-| `Combatant:ApplyStatusEffect(effect)` | Applies an immutable `StatusEffect` definition (like Burning or Stun) which automatically handles ticking and duration. |
-| `Combatant:HasStatusEffect(effectName)` | Returns boolean if the target currently suffers from this effect. |
-
-## Installation & Tests
-Run `rojo build test.project.json -o test.rbxlx`. Open in Studio to view tests.
+| `Combatant:GetResource(id)` | Returns the current value of a specific resource. |
+| `Combatant:SpendResource(id, amount)` | Consumes a resource. Fails if the current value is insufficient. |
+| `Combatant:ApplyStatusEffect(effect)` | Applies a `StatusEffect` definition (e.g., Burning, Stun) and handles its internal tick and duration. |
+| `Combatant:HasStatusEffect(effectName)` | Returns a boolean indicating if the target is currently under the specified effect. |
