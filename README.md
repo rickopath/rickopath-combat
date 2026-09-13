@@ -26,6 +26,7 @@ sequenceDiagram
 
 ## Anti-Cheat Validation
 
+To secure client prediction,<<<<<<< HEAD
 To secure client prediction, the server enforces these bounds:
 
 * **Max Rewind Depth (1.5s):** The server maintains a 1.5-second history buffer. Packets older than this are dropped to mitigate lag-switching.
@@ -57,10 +58,19 @@ This framework relies on Wally for package management and Rojo for Studio syncin
 * **To sync live:** Run `rojo serve` and connect via the Roblox Studio plugin.
 * **To build a model:** Run `rojo build default.project.json -o rickopath-combat.rbxm` and drop the file into your game.
 * **To run the test suite:** Run `rojo build test.project.json -o test.rbxlx` and open the file in Studio.
+=======
+## Technical Details
+The server pulls historical CFrames from a 60hz Rewind Buffer and uses a pure-Lua 15-axis Separating Axis Theorem (SAT) to mathematically calculate Oriented-Bounding-Box overlap 
+Fast melee swings travel in an arc. 
+Hit results and debug adornments use a strict `Pool.luau`, preventing GC lag spikes.
+Projectiles are manually ticked by the server using shape-casting.
 
-## Documentation & Setup
-
-Complete setup instructions and the API reference are located in `src/server/Docs/`:
+## Architecture Quirks
+Characters must be parented to `workspace.Alive`
+**`Combatant.Health` vs `Humanoid.Health`: Noted in GettingStarted
+`DefaultMovesetId` on the client must match the server.
+>>>>>>> e3c37a5dc00b8d6d1bd073e1541cc0e35219b8c2
+the API reference are located in `src/server/Docs/`:
 
 * **`GettingStarted.luau`**: Setup guide for rigging combatants and skills.
 * **`APIReference.luau`**: Method, signal, and hook documentation.
