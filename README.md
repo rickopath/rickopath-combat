@@ -42,7 +42,7 @@ To secure client prediction, the server enforces these bounds:
 
 ## Architecture Quirks
 
-1. **`workspace.Alive` Rule:** Characters must be parented to `workspace.Alive` before calling `CombatantRegistry.Create()`.
+1. **`workspace.Alive` Rule:** Characters must be parented to `workspace.Alive` 
 2. **Health Authority:** The framework manages an internal, authoritative health pool that forces syncs to `Humanoid.Health`.
 3. **Moveset Parity:** The `DefaultMovesetId` on the client must exactly match the server.
 
