@@ -34,16 +34,16 @@ Client prediction usually opens the door for exploiters, but this framework enfo
 - **Sequence Validation:** Every swing has an incrementing ID. Replay attacks (duplicating a hit packet to deal double damage) are automatically dropped.
 - **Future Rejection:** Any packet claiming to originate from a timestamp in the future is immediately dropped. 
 
-## Technical Details (Under The Hood)
-- **15-Axis SAT OBB Math:** Roblox doesn't let you cast rays into the past. The server pulls historical CFrames from a 60hz Rewind Buffer and uses a pure-Lua 15-axis Separating Axis Theorem (SAT) to mathematically calculate Oriented-Bounding-Box overlap without ever touching the live physics engine.
-- **Tunnel-Proof Melee Sub-Stepping:** Fast melee swings travel in an arc. The engine mathematically slices swing arcs into microscopic sub-steps based on angular distance, guaranteeing that fast swings never teleport through thin targets.
-- **Zero-Allocation Resource Pooling:** Calculates thousands of hits per second with a completely flat memory footprint. Hit results and debug adornments use a strict `Pool.luau` to check out and return tables, preventing Garbage Collection (GC) lag spikes.
-- **Deterministic Projectiles:** Bypasses Roblox's unreliable `.Touched` events entirely. Projectiles are manually ticked by the server using shape-casting so they never glitch through walls.
+## Technical Details
+The server pulls historical CFrames from a 60hz Rewind Buffer and uses a pure-Lua 15-axis Separating Axis Theorem (SAT) to mathematically calculate Oriented-Bounding-Box overlap 
+Fast melee swings travel in an arc. 
+Hit results and debug adornments use a strict `Pool.luau`, preventing GC lag spikes.
+Projectiles are manually ticked by the server using shape-casting.
 
 ## Architecture Quirks
-1. **`workspace.Alive` is absolute:** Characters must be parented to `workspace.Alive` **before** calling `CombatantRegistry.Create()`.
-2. **`Combatant.Health` vs `Humanoid.Health`:** The framework manages an authoritative health pool and syncs to `Humanoid.Health`.
-3. **Synced Moveset IDs:** `DefaultMovesetId` on the client must match the server.
+Characters must be parented to `workspace.Alive`
+**`Combatant.Health` vs `Humanoid.Health`: Noted in GettingStarted
+`DefaultMovesetId` on the client must match the server.
 
 ## Documentation & Setup
 Full setup instructions, configuration details, and the complete API reference are located in the `src/server/Docs/` directory:
