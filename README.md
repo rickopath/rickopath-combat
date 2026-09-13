@@ -46,16 +46,25 @@ To secure client prediction, the server enforces these bounds:
 2. **Health Authority:** The framework manages an internal, authoritative health pool that forces syncs to `Humanoid.Health`.
 3. **Moveset Parity:** The `DefaultMovesetId` on the client must exactly match the server.
 
-## Installation (Rojo & Wally)
+## Installation
 
+### Option 1: RBXM Download (For Non-Rojo Users)
+If you downloaded the `.rbxm` model file from GitHub Releases:
+1. Drag the `.rbxm` file into your Roblox Studio viewport. It will import as a single Folder named `RickopathCombat`.
+2. **CRITICAL:** You must manually unpack this folder, or the framework will crash.
+3. Move the `Shared` and `Packages` folders into `ReplicatedStorage`.
+4. Move the `Server` folder into `ServerScriptService`.
+5. Move the `Client` folder into `StarterPlayerScripts`.
+6. Delete the now-empty `RickopathCombat` folder.
+
+### Option 2: Rojo & Wally (For Version Control)
 This framework relies on Wally for package management and Rojo for Studio syncing.
-
-1. Ensure your toolchain manager is installed (either [Aftman](https://github.com/LPGhatguy/aftman) or [Rokit](https://github.com/rojo-rbx/rokit)).
-2. Open your terminal in the project root and run `aftman install` (or `rokit install`) to provision Wally and Rojo.
+1. Ensure your toolchain manager is installed ([Aftman](https://github.com/LPGhatguy/aftman) or [Rokit](https://github.com/rojo-rbx/rokit)).
+2. Run `aftman install` (or `rokit install`) to provision Wally and Rojo.
 3. Run `wally install` to fetch dependencies and generate the `Packages` directory.
 4. Build or sync the project:
 * **To sync live:** Run `rojo serve` and connect via the Roblox Studio plugin.
-* **To build a model:** Run `rojo build default.project.json -o rickopath-combat.rbxm` and drop the file into your game.
+* **To build a flat model:** Run `rojo build model.project.json -o RickopathCombat.rbxm`.
 * **To run the test suite:** Run `rojo build test.project.json -o test.rbxlx` and open the file in Studio.
 
 ## Documentation & Setup
