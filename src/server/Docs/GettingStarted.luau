@@ -56,11 +56,19 @@
 	To use the default built-in VFX handler, add this to your `init.client.luau`:
 	```lua
 	local PresentationClient = require(script.Combat.PresentationClient)
+	-- To change the default folders, pass a table:
+	-- PresentationClient.UseDefaultPresentation({ VFXFolder = game.ReplicatedStorage.MyParticles })
 	PresentationClient.UseDefaultPresentation()
 	```
 	
 	Place a ParticleEmitter named "Hit_Sparks" in `ReplicatedStorage.VFX`.
 	Place a Sound named "SwooshSound" in `SoundService`.
+
+	You can customize templates by adding these Attributes in Studio:
+	- `AttachToPart` (String): Part name to stick to (e.g., "RightHand").
+	- `RideTarget` (Bool): If true, forces a Part/Model effect to move with the target.
+	- `Lifetime` (Number): Seconds before the effect gets deleted (default 3).
+	- `EmitCount` (Number): How many particles burst out (default 20).
 
 	CLIENT PREDICTION:
 	local presentation = self.Context.Presentation
@@ -81,21 +89,61 @@
 	For custom emit counts, pass params:
 	`helpers.PlayEffect("Hit_Sparks", { Target = target.Model, EmitCount = 50 })`
 
+	WANT TO WRITE YOUR OWN CUSTOM HANDLER INSTEAD?
+	Don't call `UseDefaultPresentation()`. Hook the signal yourself in your client script:
+	```lua
+	local PresentationClient = require(script.Combat.PresentationClient)
+	PresentationClient.OnEffectRequested:Connect(function(effectId, params)
+		if effectId == "Blood" then
+			print("Splatter at", params.CFrame)
+		end
+	end)
+	```
+
 	--------------------------------------------------------------------------------
 	STEP 5: KNOCKBACK & STATUS EFFECTS
 	--------------------------------------------------------------------------------
 	Knockback: Call `Knockback.Apply(model, direction, strength)` inside `OnDamaged`.
 
 	Status Effects: 
+	The framework comes with a few built-in builders. 
+	
+	```lua
 	local StatusEffectBuilders = require(game.ReplicatedStorage.Shared.Combat.StatusEffectBuilders)
 	
+	-- DamageOverTime parameters: (id, damageType, amountPerTick, durationSeconds, stackRule)
+	-- NOTE: amountPerTick fires every Server Tick (10 times a second by default), NOT per second!
 	local BURNING = StatusEffectBuilders.DamageOverTime("Burning", "Fire", 3, 4, "Refresh")
-	local STUNNED = StatusEffectBuilders.Stun(2.5) 
 	
+	local STUNNED = StatusEffectBuilders.Stun(2.5) 
+	local SLOWED = StatusEffectBuilders.ModifyResistance("Slowed", "Physical", 0.5, 3)
+	```
+	
+	To make a completely custom effect (like a lifesteal buff), you just construct the table yourself:
+	```lua
+	local LIFESTEAL = {
+		Id = "Lifesteal",
+		Duration = 5,
+		MaxStacks = 1,
+		StackRule = "Refresh",
+		OnApply = function(combatant, stacks)
+			-- Do custom math
+		end,
+		OnTick = function(combatant, dt, stacks)
+			combatant:Heal(1 * stacks)
+		end,
+		OnExpire = function(combatant)
+			-- Clean up
+		end,
+	}
+	```
+
+	Apply them in your damage spec:
 	local DAMAGE_SPEC = {
 		Amount = 15,
 		OnHit = function(target, attacker, helpers)
 			target:ApplyStatusEffect(BURNING)
+			target:ApplyStatusEffect(LIFESTEAL)
 		end,
 	}
 
