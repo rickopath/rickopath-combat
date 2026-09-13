@@ -133,14 +133,30 @@
 -- VFX PRESENTATION SETTINGS
 -- ============================================================================================
 --
--- VFX Template Behaviors:
---   Model/BasePart -> Positioned via PivotTo.
---   ParticleEmitter/Trail/Beam/Attachment -> Attaches to target.
+-- If you use `PresentationClient.UseDefaultPresentation()`, here is how templates behave:
+--   Model/BasePart -> Positioned via PivotTo. Stands alone in workspace.
+--   ParticleEmitter/Trail/Beam/Attachment -> Attaches to target's body part.
 --   ParticleEmitter descendants -> All emit simultaneously.
 --
--- Attributes:
---   AttachToPart (string) - Part name on Target.
---   RideTarget (boolean) - Forces Model/BasePart to attach.
+-- Attributes (Set these on the VFX Template in Studio):
+--   AttachToPart (string) - Part name on Target (e.g. "Head").
+--   RideTarget (boolean) - Forces Model/BasePart to attach instead of standing in world.
 --   Lifetime (number) - Seconds before cleanup. Default 3.
 --   EmitCount (number) - Burst size. Default 20.
+--
+-- CUSTOM VFX FOLDERS:
+-- You can tell the default handler to look somewhere else:
+-- `PresentationClient.UseDefaultPresentation({ VFXFolder = game.ReplicatedStorage.MyParticles })`
+--
+-- CUSTOM PRESENTATION HANDLERS (Making your own):
+-- If the default behavior isn't enough, DO NOT call `UseDefaultPresentation()`. 
+-- Hook the event yourself in your client script:
+--[=[
+	PresentationClient.OnEffectRequested:Connect(function(effectId, params)
+		if effectId == "BloodSplatter" then
+			-- Write your own completely custom particle spawning code
+			print("Splattering blood at", params.CFrame)
+		end
+	end)
+]=]
 return nil

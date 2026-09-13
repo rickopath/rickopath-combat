@@ -53,6 +53,12 @@
 	--------------------------------------------------------------------------------
 	Keep visuals in the Presentation layer. Do not instance particles in combat logic.
 
+	To use the default built-in VFX handler, add this to your `init.client.luau`:
+	```lua
+	local PresentationClient = require(script.Combat.PresentationClient)
+	PresentationClient.UseDefaultPresentation()
+	```
+	
 	Place a ParticleEmitter named "Hit_Sparks" in `ReplicatedStorage.VFX`.
 	Place a Sound named "SwooshSound" in `SoundService`.
 
