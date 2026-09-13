@@ -1,6 +1,6 @@
 # rickopath-combat
 
-Server-authoritative combat framework with rollback lag compensation. Built with Rojo and Wally.
+Server-authoritative combat framework with rollback lag compensation. Built with Rojo and Wally. (rickopath/combat)
 
 ```mermaid
 sequenceDiagram
@@ -25,10 +25,11 @@ sequenceDiagram
 - Arc sub-stepping on melee swings
 - Deterministic server-ticked projectiles
 - Object pooling on hit results
-- Anti-cheat: rewind capped at 1.5s, future timestamps dropped, replay attacks blocked
+- Anti-cheat: rewind max is 1.5s, future timestamps check, replay attacks blocked
 - Skill and moveset system with input binding, cooldowns, and resource costs (mana, stamina)
 - Status effects: damage-over-time, stuns, debuffs. Supports stacking and refresh rules
-- Client-side VFX hooks with Studio attribute controls for emit count, lifetime, and part attachment
+- Client-side VFX handler built in that with a handler that can be customized, also has Studio attribute controls for emit count, lifetime, and part attachment
+- Server-side atomic checks present so race conditions and edge cases are limited
 
 ## Notes
 
@@ -60,9 +61,9 @@ To run tests: `rojo build test.project.json -o test.rbxlx`
 
 Setup and API docs are in `src/server/Docs/`:
 
-- `GettingStarted.luau` — step-by-step setup
-- `APIReference.luau` — full method and signal list
-- `ImportantMisc.luau` — advanced stuff (blocking, config, lag testing)
+- `GettingStarted.luau` - step-by-step setup
+- `APIReference.luau` - full method and signal list
+- `ImportantMisc.luau` - advanced stuff (blocking, config, lag testing)
 
 ## API
 
