@@ -159,4 +159,31 @@
 		end
 	end)
 ]=]
+
+-- ============================================================================================
+-- PASSIVES
+-- ============================================================================================
+--
+-- Passives react to combat events (damage taken/dealt). They have no Activate, no Cooldown.
+-- All hooks are optional - only define what you need.
+--
+-- PassiveDefinition shape:
+--   Id (string)
+--   OnEquipped(context)           - runs once when equipped
+--   OnUnequipped(context)         - runs when removed, disconnect anything you set up here
+--   OnDamageTaken(context, amount, damageType, source: Model?)
+--   OnDamageDealt(context, amount, damageType, target: Combatant)
+--
+-- context is the same SkillContext shape skills get - context.Combatant, context.Owner,
+-- context.Player, context.Presentation are all valid.
+--
+-- Registration: drop a file in `src/shared/Combat/Passives/` and call
+-- PassiveRegistry.Register at module scope. CombatServer.Init scans the folder automatically.
+--
+-- Equip/unequip at runtime (server only):
+--[=[
+	local CombatantPassives = require(game.ServerScriptService.Server.Combat.CombatantPassives)
+	CombatantPassives.Equip(character, "MyPassiveId")
+	CombatantPassives.Unequip(character, "MyPassiveId")
+]=]
 return nil

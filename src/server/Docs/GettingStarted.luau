@@ -148,7 +148,56 @@
 	}
 
 	--------------------------------------------------------------------------------
-	STEP 6: LAG SIMULATION
+	STEP 6: PASSIVES
+	--------------------------------------------------------------------------------
+	Passives live in `src/shared/Combat/Passives/`. Drop a file there and
+	`PassiveRegistry.RegisterFolder` picks it up automatically on server boot.
+
+	A passive is a plain table with reaction hooks. No Activate, no Cooldown.
+
+	```lua
+	local PassiveRegistry = require(game.ReplicatedStorage.Shared.Combat.PassiveRegistry)
+
+	PassiveRegistry.Register("Thorns", function(context)
+		return {
+			Id = "Thorns",
+			OnEquipped = function(ctx)
+				-- fires once when this passive is equipped to the combatant
+			end,
+			OnDamageTaken = function(ctx, amount, damageType, source)
+				-- fires every time this combatant takes damage
+				-- ctx.Combatant is the owner. source is the attacker's Model
+				if source then
+					local attacker = CombatantRegistry.Get(source)
+					if attacker then
+						attacker:ApplyDamage(amount * 0.2, "Physical", ctx.Owner)
+					end
+				end
+			end,
+			OnDamageDealt = function(ctx, amount, damageType, target)
+				-- fires every time this combatant deals damage
+				-- target is the victim's Combatant object
+			end,
+			OnUnequipped = function(ctx)
+				-- fires when removed - clean up anything you set up in OnEquipped
+			end,
+		}
+	end)
+	```
+
+	Equip it to a combatant on the server:
+	```lua
+	local CombatantPassives = require(game.ServerScriptService.Server.Combat.CombatantPassives)
+	CombatantPassives.Equip(character, "Thorns")
+	```
+
+	Unequip it:
+	```lua
+	CombatantPassives.Unequip(character, "Thorns")
+	```
+
+	--------------------------------------------------------------------------------
+	STEP 7: LAG SIMULATION
 	--------------------------------------------------------------------------------
 	Rollback does not function at 0 ping.
 	To test:
